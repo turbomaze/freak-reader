@@ -1,7 +1,7 @@
 /******************\
 |   Freak Reader   |
 | @author Anthony  |
-| @version 1.0     | 
+| @version 1.0.1   |
 | @date 2015/07/07 |
 | @edit 2015/07/07 |
 \******************/
@@ -202,6 +202,7 @@ var FreakReader = (function() {
      * helper functions */
     function getWordDifficulty(word) { //from 0 to 1, 0 is easy
         var cleanedUpWord = word.replace(/[^a-zA-Z0-9-]/g, '');
+        cleanedUpWord = cleanedUpWord.toLowerCase();
         var maxFreq = wordFreqs['you'];
         var freq = wordFreqs.hasOwnProperty(
             cleanedUpWord

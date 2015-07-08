@@ -19,10 +19,11 @@ var FreakReader = (function() {
 
     /*********************
      * working variables */
-    var sourceText = '';
+    var sourceText = [];
     var currentlyReading = false;
     var isPaused = false;
     var wordPtr = 0;
+    var train = null;
 
     /******************
      * work functions */
@@ -60,21 +61,66 @@ var FreakReader = (function() {
             $s('#pause-btn').value = 'Pause';
             currentlyReading = true;
 
-            //do some work
+            //get the text to speed read
+            sourceText = $s('#source-text').value.split(' ');
+
+            //build the AsyncTrain
+            train = new AsyncTrain(function workFunc() {
+                $s('#text').innerHTML = sourceText[wordPtr];
+                wordPtr++;
+            }, function delayFunc() {
+                return 60000/SPEED; //in ms
+            });
+
+            //run it!
+            train.run();
         });
         $s('#pause-btn').addEventListener('click', function() {
             if (!currentlyReading) return;
 
             isPaused = !isPaused; //toggle
             $s('#pause-btn').value = isPaused ? 'Continue' : 'Pause';
+
+            train.pause();
         });
     }
 
     /***********
      * objects */
+    function AsyncTrain(chooChoo, getNextDelay) {
+        var self = this;
+        this.timer = null;
+        this.isPaused = false;
+        this.run = function() {
+            chooChoo();
+            this.timer = setTimeout(function() {
+                self.run();
+            }, getNextDelay());
+        };
+        this.pause = function() {
+            //pause here
+            this.isPaused = !this.isPaused;
+            if (this.isPaused) { //they're pausing
+                clearTimeout(this.timer);
+            } else { //they're unpausing
+                this.timer = setTimeout(function() {
+                    self.run();
+                }, getNextDelay());
+            }
+        };
+    }
 
     /********************
      * helper functions */
+    function getWordDifficulty(word) { //from 0 to 1, 0 is easy
+        var cleanedUpWord = word.replace(/[^a-zA-Z0-9-]/g, '');
+        var maxFreq = wordFreqs['you'];
+        var freq = wordFreqs.hasOwnProperty(
+            cleanedUpWord
+        ) ? wordFreqs[cleanedUpWord] : 1;
+        return (maxFreq - freq)/maxFreq;
+    }
+
     function $s(id) { //for convenience
         if (id.charAt(0) !== '#') return false;
         return document.getElementById(id.substring(1));

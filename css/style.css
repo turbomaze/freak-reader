@@ -12,7 +12,7 @@ html, body {
     position: relative;
     float: left;
     height: 33%;
-    margin-bottom: -3em;
+    margin-bottom: -2em;
     width: 1px
 }
 
@@ -22,7 +22,7 @@ html, body {
     margin: 0 auto;
     text-align: center;
 
-    font-size: 3em
+    font-size: 2em;
 }
 
 .controls {

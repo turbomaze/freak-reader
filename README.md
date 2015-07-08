@@ -23,6 +23,6 @@ that both chunks contain two words. The rarity of the latter two words makes the
 
 Freak Reader leverages word frequency (get it, freq=freak haha...)
 to intelligently allocate more time to complex chunks and less time
-to simpler chunks {WIP}. Alternatively, you can fix the width
+to simpler chunks. Alternatively, you can fix the width
 of your chunks in pixels and allocate time as a function of
 number of words and word complexity {WIP}.

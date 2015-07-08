@@ -9,17 +9,65 @@
 var FreakReader = (function() {
     /**********
      * config */
+    var CHUNK_WORDS = true;
+    var WORD_CHUNK_SIZE = 1;
+    var PIX_CHUNK_SIZE = 300;
+    var SPEED = 400;
 
     /*************
      * constants */
 
     /*********************
      * working variables */
+    var sourceText = '';
+    var currentlyReading = false;
+    var isPaused = false;
+    var wordPtr = 0;
 
     /******************
      * work functions */
     function initFreakReader() {
-         //code
+        //default values
+        $s('#chunk-words').checked = CHUNK_WORDS ? 'checked' : false;
+        $s('#chunk-size-words').value = WORD_CHUNK_SIZE;
+        $s('#chunk-pix').checked =  !CHUNK_WORDS ? 'checked' : false;
+        $s('#chunk-size-pix').value = PIX_CHUNK_SIZE;
+        $s('#wpm').value = SPEED;
+
+        //event listeners
+        $s('#chunk-words').addEventListener('change', function() {
+            CHUNK_WORDS = !!$s('#chunk-words').checked;
+            $s('#chunk-pix').checked = !CHUNK_WORDS ? 'checked' : false;
+        });
+        $s('#chunk-pix').addEventListener('change', function() {
+            CHUNK_WORDS = !$s('#chunk-pix').checked;
+            $s('#chunk-words').checked = CHUNK_WORDS ? 'checked' : false;
+        });
+        $s('#chunk-size-words').addEventListener('input', function() {
+            WORD_CHUNK_SIZE = parseInt($s('#chunk-size-words').value);
+        });
+        $s('#chunk-size-pix').addEventListener('input', function() {
+            PIX_CHUNK_SIZE = parseInt($s('#chunk-size-pix').value);
+        });
+        $s('#wpm').addEventListener('input', function() {
+            SPEED = parseInt($s('#wpm').value);
+        });
+
+        $s('#start-btn').addEventListener('click', function() {
+            //keep track of state
+            wordPtr = 0;
+            isPaused = false;
+            $s('#pause-btn').value = 'Pause';
+            currentlyReading = true;
+
+            //do some work
+        });
+        $s('#pause-btn').addEventListener('click', function() {
+            if (!currentlyReading) return;
+
+            isPaused = !isPaused; //toggle
+            $s('#pause-btn').value = isPaused ? 'Continue' : 'Pause';
+        });
     }
 
     /***********

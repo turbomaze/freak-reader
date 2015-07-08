@@ -11,7 +11,7 @@ html, body {
 .floater {
     position: relative;
     float: left;
-    height: 30%;
+    height: 33%;
     margin-bottom: -3em;
     width: 1px
 }

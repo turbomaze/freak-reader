@@ -20,18 +20,15 @@
                 <div class="unit two-of-five">
                     <h4>Settings</h4>
                     <div>
-                        <input type="checkbox" id="chunk-word"
-                               checked="checked">
+                        <input type="checkbox" id="chunk-words">
                         Chunk size (words):
                         <input type="number" min="1" max="5"
-                               value="1"
                                id="chunk-size-words">
                     </div>
                     <div>
-                        <input type="checkbox" id="chunk-pic">
+                        <input type="checkbox" id="chunk-pix">
                         Chunk size (pixels):
                         <input type="number" min="100" max="900"
-                               value="300"
                                id="chunk-size-pix">
                     </div>
                 </div>
@@ -41,10 +38,12 @@
                     <div>
                         Speed (words/min):
                         <input type="number" min="1" max="6000"
-                               id="wpm" value="400">
+                               id="wpm">
                     </div>
                     <input type="button" id="start-btn"
                            value="Start freak reading">
+                    <input type="button" id="pause-btn"
+                           value="Pause">
                 </div>
             </div>
         </div>

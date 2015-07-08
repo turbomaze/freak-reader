@@ -66,10 +66,21 @@ var FreakReader = (function() {
 
             //build the AsyncTrain
             train = new AsyncTrain(function workFunc() {
-                $s('#text').innerHTML = sourceText[wordPtr];
-                wordPtr++;
+                var chunk = '';
+                var upTo = Math.min(
+                    sourceText.length, wordPtr+WORD_CHUNK_SIZE
+                );
+                for (; wordPtr < upTo; wordPtr++) {
+                    chunk += ' '+sourceText[wordPtr];
+                }
+                chunk = chunk.substring(1);
+
+                $s('#text').innerHTML = chunk;
+
+                //false when you need to stop
+                return wordPtr < sourceText.length;
             }, function delayFunc() {
-                return 60000/SPEED; //in ms
+                return (60000/SPEED)*WORD_CHUNK_SIZE; //in ms
             });
 
             //run it!
@@ -92,10 +103,14 @@ var FreakReader = (function() {
         this.timer = null;
         this.isPaused = false;
         this.run = function() {
-            chooChoo();
-            this.timer = setTimeout(function() {
-                self.run();
-            }, getNextDelay());
+            var keepGoing = chooChoo();
+            if (keepGoing) {
+                this.timer = setTimeout(function() {
+                    self.run();
+                }, getNextDelay());
+            } else {
+                //stop
+            }
         };
         this.pause = function() {
             //pause here

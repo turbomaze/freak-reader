@@ -1,7 +1,7 @@
 /******************\
 |   Freak Reader   |
 | @author Anthony  |
-| @version 1.0     |
+| @version 1.0.1   |
 | @date 2015/07/07 |
 | @edit 2015/07/07 |
 \******************/

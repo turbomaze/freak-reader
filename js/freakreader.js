@@ -9,6 +9,7 @@
 var FreakReader = (function() {
     /**********
      * config */
+    var DIFFICULTY_TIME_RATIO = 6;
     var CHUNK_WORDS = true;
     var WORD_CHUNK_SIZE = 1;
     var PIX_CHUNK_SIZE = 300;
@@ -39,19 +40,24 @@ var FreakReader = (function() {
         $s('#chunk-words').addEventListener('change', function() {
             CHUNK_WORDS = !!$s('#chunk-words').checked;
             $s('#chunk-pix').checked = !CHUNK_WORDS ? 'checked' : false;
+            train.setDelayFunc(getDelayFunction());
         });
         $s('#chunk-pix').addEventListener('change', function() {
             CHUNK_WORDS = !$s('#chunk-pix').checked;
             $s('#chunk-words').checked = CHUNK_WORDS ? 'checked' : false;
+            train.setDelayFunc(getDelayFunction());
         });
         $s('#chunk-size-words').addEventListener('input', function() {
             WORD_CHUNK_SIZE = parseInt($s('#chunk-size-words').value);
+            train.setDelayFunc(getDelayFunction());
         });
         $s('#chunk-size-pix').addEventListener('input', function() {
             PIX_CHUNK_SIZE = parseInt($s('#chunk-size-pix').value);
+            train.setDelayFunc(getDelayFunction());
         });
         $s('#wpm').addEventListener('input', function() {
             SPEED = parseInt($s('#wpm').value);
+            train.setDelayFunc(getDelayFunction());
         });
 
         $s('#start-btn').addEventListener('click', function() {
@@ -79,9 +85,7 @@ var FreakReader = (function() {
 
                 //false when you need to stop
                 return wordPtr < sourceText.length;
-            }, function delayFunc() {
-                return (60000/SPEED)*WORD_CHUNK_SIZE; //in ms
-            });
+            }, getDelayFunction());
 
             //run it!
             train.run();
@@ -96,18 +100,77 @@ var FreakReader = (function() {
         });
     }
 
+    function getDelayFunction() {
+        var tools = getBaseRateAndDilaFunc();
+        var getDilationFromDiff = tools[0];
+        var baseRate = tools[1];
+        return function() {
+            var nextChunk = [];
+            var upTo = Math.min(
+                sourceText.length, wordPtr+WORD_CHUNK_SIZE
+            );
+            for (var ai = wordPtr; ai < upTo; ai++) {
+                nextChunk.push(sourceText[ai]);
+            }
+
+            var diff = nextChunk.reduce(function(a, b) {
+                return a + getWordDifficulty(b);
+            }, 0);
+            return getDilationFromDiff(diff)*baseRate;
+        };
+    }
+
+    function getBaseRateAndDilaFunc() {
+        var chunks = [];
+        var ai = wordPtr;
+        while (ai < sourceText.length) {
+            var chunk = [];
+            var upTo = Math.min(
+                sourceText.length, ai+WORD_CHUNK_SIZE
+            );
+            for (; ai < upTo; ai++) {
+                chunk.push(sourceText[ai]);
+            }
+            chunks.push(chunk);
+        }
+        var difficulties = chunks.map(function(chunk) {
+            return chunk.reduce(function(a, b) {
+                return a + getWordDifficulty(b);
+            }, 0);
+        });
+        var minDiff = difficulties.reduce(function(a, b) {
+            return Math.min(a, b);
+        });
+        var maxDiff = difficulties.reduce(function(a, b) {
+            return Math.max(a, b);
+        });
+        var getDilationFromDiff = function(diff) {
+            var extra = DIFFICULTY_TIME_RATIO-1;
+            return 1+extra*(diff-minDiff)/(maxDiff-minDiff);
+        };
+        var dilations = difficulties.map(getDilationFromDiff);
+        var dilationSum = dilations.reduce(function(a, b) {
+            return a+b;
+        });
+        var totalTime = (60000/SPEED)*(sourceText.length - wordPtr);
+        var baseRate = totalTime/dilationSum;
+
+        return [getDilationFromDiff, baseRate];
+    }
+
     /***********
      * objects */
     function AsyncTrain(chooChoo, getNextDelay) {
         var self = this;
         this.timer = null;
         this.isPaused = false;
+        this.delayFunc = getNextDelay;
         this.run = function() {
             var keepGoing = chooChoo();
             if (keepGoing) {
                 this.timer = setTimeout(function() {
                     self.run();
-                }, getNextDelay());
+                }, this.delayFunc());
             } else {
                 //stop
             }
@@ -120,8 +183,11 @@ var FreakReader = (function() {
             } else { //they're unpausing
                 this.timer = setTimeout(function() {
                     self.run();
-                }, getNextDelay());
+                }, this.delayFunc());
             }
+        };
+        this.setDelayFunc = function(func) {
+            this.delayFunc = func;
         };
     }
 

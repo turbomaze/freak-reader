@@ -4,11 +4,48 @@
         <meta charset="UTF-8">
         <title>Freak Reader</title>
 
+        <link rel="stylesheet" type="text/css" href="css/toast.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
 
+        <script src="js/enfreqlist.js"></script>
         <script src="js/freakreader.js"></script>
     </head>
     <body>
-        
+        <div class="floater"></div>
+        <div class="centered" id="text">
+            [start freaking]
+        </div>
+        <div class="controls container">
+            <div class="grid">
+                <div class="unit two-of-five">
+                    <h4>Settings</h4>
+                    <div>
+                        <input type="checkbox" id="chunk-words">
+                        Chunk size (words):
+                        <input type="number" min="1" max="5"
+                               id="chunk-size-words">
+                    </div>
+                    <div>
+                        <input type="checkbox" id="chunk-pix">
+                        Chunk size (pixels):
+                        <input type="number" min="100" max="900"
+                               id="chunk-size-pix">
+                    </div>
+                </div>
+                <div class="unit three-of-five">
+                    <h4>Source text</h4>
+                    <textarea id="source-text"></textarea><br>
+                    <div>
+                        Speed (words/min):
+                        <input type="number" min="1" max="6000"
+                               id="wpm">
+                    </div>
+                    <input type="button" id="start-btn"
+                           value="Start freak reading">
+                    <input type="button" id="pause-btn"
+                           value="Pause">
+                </div>
+            </div>
+        </div>
     </body>
 </html>

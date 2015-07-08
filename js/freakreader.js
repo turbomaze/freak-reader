@@ -1,7 +1,7 @@
 /******************\
 |   Freak Reader   |
 | @author Anthony  |
-| @version 0.2     |
+| @version 1.0     |
 | @date 2015/07/07 |
 | @edit 2015/07/07 |
 \******************/
@@ -32,8 +32,9 @@ var FreakReader = (function() {
         //default values
         $s('#chunk-words').checked = CHUNK_WORDS ? 'checked' : false;
         $s('#chunk-size-words').value = WORD_CHUNK_SIZE;
-        $s('#chunk-pix').checked =  !CHUNK_WORDS ? 'checked' : false;
-        $s('#chunk-size-pix').value = PIX_CHUNK_SIZE;
+        /*$s('#chunk-pix').checked =  !CHUNK_WORDS ? 'checked' : false;
+        $s('#chunk-size-pix').value = PIX_CHUNK_SIZE;*/
+        $s('#diff-ratio').value = DIFFICULTY_TIME_RATIO;
         $s('#wpm').value = SPEED;
 
         //event listeners
@@ -42,17 +43,23 @@ var FreakReader = (function() {
             $s('#chunk-pix').checked = !CHUNK_WORDS ? 'checked' : false;
             train.setDelayFunc(getDelayFunction());
         });
-        $s('#chunk-pix').addEventListener('change', function() {
+        /*$s('#chunk-pix').addEventListener('change', function() {
             CHUNK_WORDS = !$s('#chunk-pix').checked;
             $s('#chunk-words').checked = CHUNK_WORDS ? 'checked' : false;
             train.setDelayFunc(getDelayFunction());
-        });
+        });*/
         $s('#chunk-size-words').addEventListener('input', function() {
             WORD_CHUNK_SIZE = parseInt($s('#chunk-size-words').value);
             train.setDelayFunc(getDelayFunction());
         });
-        $s('#chunk-size-pix').addEventListener('input', function() {
+        /*$s('#chunk-size-pix').addEventListener('input', function() {
             PIX_CHUNK_SIZE = parseInt($s('#chunk-size-pix').value);
+            train.setDelayFunc(getDelayFunction());
+        });*/
+        $s('#diff-ratio').addEventListener('input', function() {
+            DIFFICULTY_TIME_RATIO = parseInt(
+                $s('#diff-ratio').value
+            );
             train.setDelayFunc(getDelayFunction());
         });
         $s('#wpm').addEventListener('input', function() {
